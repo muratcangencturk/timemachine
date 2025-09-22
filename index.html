@@ -460,7 +460,46 @@
         function updateButtons(){const e=filteredEvents.length;prevBtn.disabled=0===e||0===currentIndex,nextBtn.disabled=0===e||currentIndex===e-1,randomBtn.disabled=e<=1}
         function showListModal(){modalTitle.textContent=`${currentCategory} Kategorisindeki Olaylar`,modalBody.innerHTML="",0===filteredEvents.length?modalBody.innerHTML="<p>Gösterilecek olay bulunamadı.</p>":filteredEvents.forEach((e,t)=>{const o=document.createElement("div");o.className="event-item",o.dataset.index=t,o.setAttribute("tabindex",0),o.innerHTML=`<h3>${e.emoji} ${e.year} - ${e.title}</h3>`,modalBody.appendChild(o)}),modal.style.display="block",filteredEvents.length>0&&modalBody.querySelector(".event-item").focus()}
         function handleModalClick(e){const t=e.target.closest(".event-item");if(!t)return;const o=parseInt(t.dataset.index,10);isNaN(o)||(currentIndex=o,displayEvent(currentIndex),modal.style.display="none")}
-        function handleKeyboardControls(e){const t=modal.style.display==="block";if(t){const o=document.activeElement;"Escape"===e.key&&closeModalBtn.click(),"Enter"===e.key&&o.classList.contains("event-item")&&o.click(),"ArrowDown"===e.key||"s"===e.key.toLowerCase()?((e.preventDefault(),o.nextElementSibling)?.focus()):"ArrowUp"===e.key||"w"===e.key.toLowerCase()&&((e.preventDefault(),o.previousElementSibling)?.focus())}else"ArrowRight"===e.key||"d"===e.key.toLowerCase()?nextBtn.click():"ArrowLeft"===e.key||"a"===e.key.toLowerCase()?prevBtn.click():" "===e.key?(e.preventDefault(),listAllBtn.click()):"Tab"===e.key&&document.activeElement!==categorySelect?(e.preventDefault(),categorySelect.focus()):"r"===e.key.toLowerCase()&&randomBtn.click()}
+        function handleKeyboardControls(e) {
+            const isModalOpen = modal.style.display === "block";
+            const key = e.key;
+            const keyLower = key.toLowerCase();
+
+            if ((e.ctrlKey || e.metaKey) && keyLower === "k") {
+                if (!isModalOpen) {
+                    e.preventDefault();
+                    categorySelect.focus();
+                }
+                return;
+            }
+
+            if (isModalOpen) {
+                const activeElement = document.activeElement;
+
+                if (key === "Escape") {
+                    closeModalBtn.click();
+                } else if (key === "Enter" && activeElement?.classList.contains("event-item")) {
+                    activeElement.click();
+                } else if (key === "ArrowDown" || keyLower === "s") {
+                    e.preventDefault();
+                    activeElement?.nextElementSibling?.focus();
+                } else if (key === "ArrowUp" || keyLower === "w") {
+                    e.preventDefault();
+                    activeElement?.previousElementSibling?.focus();
+                }
+            } else {
+                if (key === "ArrowRight" || keyLower === "d") {
+                    nextBtn.click();
+                } else if (key === "ArrowLeft" || keyLower === "a") {
+                    prevBtn.click();
+                } else if (key === " ") {
+                    e.preventDefault();
+                    listAllBtn.click();
+                } else if (keyLower === "r") {
+                    randomBtn.click();
+                }
+            }
+        }
         categorySelect.addEventListener("change",filterEvents);
         eraSelect.addEventListener("change",filterEvents);
         regionSelect.addEventListener("change",filterEvents);
